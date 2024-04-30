@@ -78,13 +78,28 @@ create_sample_data <- function(folder, output1, output2) {
   #faasr_put_file(local_file="df2.csv", remote_folder=folder, remote_file=output2)
   
   # Running functions with network monitoring
+  log_msg <- paste0('Monitoring Results:')
   result_one <- run_with_network_monitoring(faasr_put_file, local_file="df1.csv", remote_folder=folder, remote_file=output1)
-  log_msg <- paste0("Monitoring Results:", paste(unlist(result_one), collapse = ", "), "\n")
+  log_msg <- paste0(
+    "Interface: ", result_with_params$Interface,
+    ", Bytes Sent Diff: ", result_one$Bytes_Sent_Diff,
+    ", Bytes Recv Diff: ", result_one$Bytes_Recv_Diff,
+    ", Packets Sent Diff: ", result_one$Packets_Sent_Diff,
+    ", Packets Recv Diff: ", result_one$Packets_Recv_Diff
+  )
+  log_msg <- paste0('/n')
+  log_msg <- paste0('Monitoring Results:')
   result_two <- run_with_network_monitoring(faasr_put_file, local_file="df2.csv", remote_folder=folder, remote_file=output2)
-  log_msg <- paste0("Monitoring Results:", paste(unlist(result_two), collapse = ", "), "\n")
-  
+  log_msg <- paste0(
+    "Interface: ", result_with_params$Interface,
+    ", Bytes Sent Diff: ", result_two$Bytes_Sent_Diff,
+    ", Bytes Recv Diff: ", result_two$Bytes_Recv_Diff,
+    ", Packets Sent Diff: ", result_two$Packets_Sent_Diff,
+    ", Packets Recv Diff: ", result_two$Packets_Recv_Diff
+  )
+  log_msg <- paste0('/n')
   # Print a log message
   # 
-  log_msg <- paste0('create_sample_data finished; outputs written to folder ', folder, ' in default S3 bucket')
+  log_msg <- paste0('Function create_sample_data finished; outputs written to folder ', folder, ' in default S3 bucket')
   faasr_log(log_msg)
 }	
