@@ -1,5 +1,6 @@
 install.packages("reticulate")
 library(reticulate)
+print(reticulate::py_discover_config())
 
 create_sample_data <- function(folder, output1, output2) {
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
