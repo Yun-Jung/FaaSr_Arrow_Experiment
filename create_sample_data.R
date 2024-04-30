@@ -1,66 +1,50 @@
 create_sample_data <- function(folder, output1, output2) {
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
-  # Function to fetch current network statistics using 'ifconfig'
+  install.packages("reticulate")
+  library(reticulate)
+  py_install("psutil")
+  
+  psutil <- import("psutil")
+  
+  # Function to fetch and return formatted network statistics
   get_network_stats <- function() {
-    system("sudo apt-get -y update", intern = TRUE)
-    system("sudo apt-get install -y net-tools", intern = TRUE)
-    command <- "ifconfig"
-    stats_output <- system(command, intern = TRUE)
-    parse_network_interface_stats(stats_output)
+    net_io <- psutil$net_io_counters(pernic = TRUE)
+    stats <- lapply(names(net_io), function(name) {
+      interface_stats <- net_io[[name]]
+      list(
+        Interface = name,
+        Bytes_Sent = interface_stats$bytes_sent,
+        Bytes_Recv = interface_stats$bytes_recv,
+        Packets_Sent = interface_stats$packets_sent,
+        Packets_Recv = interface_stats$packets_recv
+      )
+    })
+    names(stats) <- names(net_io)
+    return(stats)
   }
   
-  # Function to parse output from 'ifconfig'
-  parse_network_interface_stats <- function(stats_output) {
-    # Initialize an empty list to store stats for each interface
-    interface_stats <- list()
-    current_interface <- NULL
-    lines <- stats_output
-    
-    # Loop through each line of the output
-    for (i in seq_along(lines)) {
-      line <- lines[i]
-      # Detect the start of a new interface block
-      if (grepl("^[a-zA-Z0-9]", line)) {
-        if (!is.null(current_interface)) {
-          interface_stats[[current_interface$name]] <- current_interface
-        }
-        current_interface <- list(name = gsub("(:).*", "", line), RX = 0, TX = 0)
-      }
-      # Extract received bytes
-      if (grepl("RX packets", line)) {
-        current_interface$RX <- as.numeric(gsub(".*RX bytes:([0-9]+).*", "\\1", line))
-      }
-      # Extract transmitted bytes
-      if (grepl("TX packets", line)) {
-        current_interface$TX <- as.numeric(gsub(".*TX bytes:([0-9]+).*", "\\1", line))
-      }
-    }
-    if (!is.null(current_interface)) {
-      interface_stats[[current_interface$name]] <- current_interface
-    }
-    return(interface_stats)
-  }
-  # Function to run any function with network monitoring
+  # Function to run any given function with network monitoring
   run_with_network_monitoring <- function(func) {
     before_stats <- get_network_stats()
-    func()
+    func()  # Run the passed function
     after_stats <- get_network_stats()
     
-    # Calculate differences in network traffic
+    # Calculate and return the differences in network traffic
     network_diff <- lapply(names(before_stats), function(name) {
       if (name %in% names(after_stats)) {
+        before <- before_stats[[name]]
+        after <- after_stats[[name]]
         list(
-          RX = after_stats[[name]]$RX - before_stats[[name]]$RX,
-          TX = after_stats[[name]]$TX - before_stats[[name]]$TX
+          Interface = name,
+          Bytes_Sent_Diff = after$Bytes_Sent - before$Bytes_Sent,
+          Bytes_Recv_Diff = after$Bytes_Recv - before$Bytes_Recv,
+          Packets_Sent_Diff = after$Packets_Sent - before$Packets_Sent,
+          Packets_Recv_Diff = after$Packets_Recv - before$Packets_Recv
         )
-      } else {
-        list(RX = NA, TX = NA)
       }
     })
-    names(network_diff) <- names(before_stats)
-    network_diff
+    return(network_diff)
   }
-  
   
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
   # Create sample files for FaaSr demo and stores in an S3 bucket
@@ -78,7 +62,7 @@ create_sample_data <- function(folder, output1, output2) {
   df2 <- NULL
   for (e in 1:10)
     rbind(df2,data.frame(v1=e,v2=2*e,v3=3*e)) -> df2
-
+  
   # Now we export these data frames to CSV files df1.csv and df2.csv stored in a local directory
   #
   write.table(df1, file="df1.csv", sep=",", row.names=F, col.names=T)
@@ -89,14 +73,15 @@ create_sample_data <- function(folder, output1, output2) {
   #faasr_put_file(local_file="df1.csv", remote_folder=folder, remote_file=output1)
   #faasr_put_file(local_file="df2.csv", remote_folder=folder, remote_file=output2)
   
-  # Initialize log and run functions
-  network_activity_log <- list()
-  network_activity_log[[1]] <- run_with_network_monitoring(faasr_put_file(local_file="df1.csv", remote_folder=folder, remote_file=output1))
-  network_activity_log[[2]] <- run_with_network_monitoring(faasr_put_file(local_file="df2.csv", remote_folder=folder, remote_file=output2))
+  # Running functions with network monitoring
+  log_msg <- paste0('Monitoring Function One:')
+  result_one <- run_with_network_monitoring(faasr_put_file(local_file="df1.csv", remote_folder=folder, remote_file=output1))
+  log_msg <- paste0(result_one)
   
-  # Print network monitoring results
-  log_msg <- paste0('Network Activity Log:')
-  log_msg <- paste0(network_activity_log)
+  log_msg <- paste0('Monitoring Function One:')
+  result_two <- run_with_network_monitoring(faasr_put_file(local_file="df2.csv", remote_folder=folder, remote_file=output2))
+  log_msg <- paste0(result_two)
+  
   
   # Print a log message
   # 
