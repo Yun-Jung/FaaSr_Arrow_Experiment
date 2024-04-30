@@ -5,10 +5,11 @@ create_sample_data <- function(folder, output1, output2) {
   system('sudo apt-get install -y r-base python3 python3-dev python3-pip python3-venv')
   install.packages("reticulate")
   library(reticulate)
-  print(reticulate::py_discover_config())
   use_python("/usr/bin/python3.10")
   print(reticulate::py_discover_config())
   print('test1')
+  os <- import("os")
+  print('test2')
   py_install("psutil")
   print('test2')
   
