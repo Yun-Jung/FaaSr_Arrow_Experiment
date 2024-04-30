@@ -60,17 +60,61 @@ create_sample_data <- function(folder, output1, output2) {
   # This demo function generates two data frames, exports them as CSV files and store them into S3
   # First we create two data frames df2 and df2
   #
-  df1 <- NULL
-  for (e in 1:10)
-    rbind(df1,data.frame(v1=e,v2=e^2,v3=e^3)) -> df1
-  df2 <- NULL
-  for (e in 1:10)
-    rbind(df2,data.frame(v1=e,v2=2*e,v3=3*e)) -> df2
+  #df1 <- NULL
+  #for (e in 1:10)
+  #  rbind(df1,data.frame(v1=e,v2=e^2,v3=e^3)) -> df1
+  #df2 <- NULL
+  #for (e in 1:10)
+  #  rbind(df2,data.frame(v1=e,v2=2*e,v3=3*e)) -> df2
   
   # Now we export these data frames to CSV files df1.csv and df2.csv stored in a local directory
   #
-  write.table(df1, file="df1.csv", sep=",", row.names=F, col.names=T)
-  write.table(df2, file="df2.csv", sep=",", row.names=F, col.names=T)
+  #write.table(df1, file="df1.csv", sep=",", row.names=F, col.names=T)
+  #write.table(df2, file="df2.csv", sep=",", row.names=F, col.names=T)
+    ##############Test Data1###################
+  # Set seed for reproducibility
+  set.seed(123)
+  
+  # Generate a 1000x1000 matrix of random numbers between 1 and 99999
+  original_matrix <- matrix(sample(1:99999, 1000000, replace = TRUE), nrow = 1000, ncol = 1000)
+  
+  # Function to append five random digits to a number
+  append_digits <- function(x) {
+    # Generate five random digits
+    five_digits <- sample(0:9, 5, replace = TRUE)
+    # Convert digits to a single string
+    digits_string <- paste0(five_digits, collapse = "")
+    # Append digits to the original number and return as a numeric value
+    paste0(x, digits_string)
+  }
+  
+  # Apply the function to each element in the matrix
+  extended_matrix <- apply(original_matrix, c(1, 2), append_digits)
+  # Write the extended matrix to a CSV file
+  write.csv(extended_matrix, "df1.csv", row.names = FALSE)
+  ##############Test Data1###################
+  ##############Test Data2###################
+  # Set seed for reproducibility
+  set.seed(949)
+  
+  # Generate a 1000x1000 matrix of random numbers between 1 and 99999
+  original_matrix <- matrix(sample(1:99999, 1000000, replace = TRUE), nrow = 1000, ncol = 1000)
+  
+  # Function to append five random digits to a number
+  append_digits <- function(x) {
+    # Generate five random digits
+    five_digits <- sample(0:9, 5, replace = TRUE)
+    # Convert digits to a single string
+    digits_string <- paste0(five_digits, collapse = "")
+    # Append digits to the original number and return as a numeric value
+    paste0(x, digits_string)
+  }
+  
+  # Apply the function to each element in the matrix
+  extended_matrix <- apply(original_matrix, c(1, 2), append_digits)
+  # Write the extended matrix to a CSV file
+  write.csv(extended_matrix, "df2.csv", row.names = FALSE)
+  ##############Test Data2###################
   
   # Now, upload the these file to the S3 bucket with folder name and file name provided by user
   #
