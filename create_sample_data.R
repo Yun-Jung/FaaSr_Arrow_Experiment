@@ -33,6 +33,7 @@ create_sample_data <- function(folder, output1, output2) {
   
   # Function to run any given function with network monitoring
   run_with_network_monitoring <- function(func) {
+    print(func)
     print('checkpoint1')
     before_stats <- get_network_stats()
     print('checkpoint2')
