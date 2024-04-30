@@ -1,9 +1,11 @@
-install.packages("reticulate")
-library(reticulate)
-use_python("/usr/bin/python3")
 
 create_sample_data <- function(folder, output1, output2) {
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
+  system('sudo apt-get update && apt-get upgrade -y')
+  system('sudo apt-get install -y r-base python3 python3-dev python3-pip python3-venv')
+  install.packages("reticulate")
+  library(reticulate)
+  print(reticulate::py_discover_config())
   print('test1')
   py_install("pandas")
   print('test2')
