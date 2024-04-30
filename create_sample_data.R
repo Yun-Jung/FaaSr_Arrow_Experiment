@@ -78,7 +78,7 @@ create_sample_data <- function(folder, output1, output2) {
   #faasr_put_file(local_file="df2.csv", remote_folder=folder, remote_file=output2)
   
   # Running functions with network monitoring
-  log_msg <- paste0(log_msg, 'Monitoring Results:')
+  log_msg <- paste0('Monitoring Results:')
   result_one <- run_with_network_monitoring(faasr_put_file, local_file="df1.csv", remote_folder=folder, remote_file=output1)
   log_msg <- paste0(
     log_msg, 
