@@ -6,8 +6,7 @@ create_sample_data <- function(folder, output1, output2) {
   install.packages("reticulate")
   library(reticulate)
   use_python("/usr/bin/python3.10")
-  conda_create("r-reticulate")
-  conda_install("r-reticulate", "psutil")
+  system('sudo pip install psutil')
   print('test')
   
   psutil <- import("psutil")
