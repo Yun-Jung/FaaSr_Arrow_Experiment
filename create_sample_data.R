@@ -6,8 +6,7 @@ create_sample_data <- function(folder, output1, output2) {
   install.packages("reticulate")
   library(reticulate)
   use_python("/usr/bin/python3.10")
-  system('sudo pip install psutil')
-  print('test')
+  system('sudo pip install --upgrade psutil')
   
   psutil <- import("psutil")
   
