@@ -2,10 +2,8 @@ create_sample_data <- function(folder, output1, output2) {
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
   # Function to fetch current network statistics for all interfaces
   get_all_network_stats <- function() {
-    Sys.setenv(DEBIAN_FRONTEND = "noninteractive")
     system("sudo apt-get update")
-    system("sudo apt-get install -y dialog")
-    system("sudo apt-get install -y iproute2-doc iproute2")
+    system("sudo apt-get install -qq -y iproute2-doc iproute2")
     command <- "ip -s link"
     stats_output <- system(command, intern = TRUE)
     parse_all_network_interface_stats(stats_output)
