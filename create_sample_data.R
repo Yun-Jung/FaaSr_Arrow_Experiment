@@ -88,7 +88,7 @@ create_sample_data <- function(folder, output1, output2) {
   
   # Running functions with network monitoring
   log_msg <- paste0('Monitoring Function One:')
-  result_one <- run_with_network_monitoring(faasr_put_file(local_file="df1.csv", remote_folder=folder, remote_file=output1))
+  result_one <- run_with_network_monitoring(faasr_put_file, local_file="df1.csv", remote_folder=folder, remote_file=output1)
   log_msg <- paste0(result_one)
   print('checkpoint3')
   log_msg <- paste0('Monitoring Function One:')
