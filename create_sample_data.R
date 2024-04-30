@@ -6,7 +6,7 @@ create_sample_data <- function(folder, output1, output2) {
   install.packages("reticulate")
   library(reticulate)
   print(reticulate::py_discover_config())
-  use_python("/usr/lib/python3.10")
+  use_python("/usr/bin/python3.10")
   print(reticulate::py_discover_config())
   print('test1')
   py_install("psutil")
