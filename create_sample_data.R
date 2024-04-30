@@ -30,7 +30,7 @@ create_sample_data <- function(folder, output1, output2) {
     names(stats) <- names(net_io)
     return(stats)
   }
-  
+  print('checkpoint1')
   # Function to run any given function with network monitoring
   run_with_network_monitoring <- function(func) {
     before_stats <- get_network_stats()
@@ -53,7 +53,7 @@ create_sample_data <- function(folder, output1, output2) {
     })
     return(network_diff)
   }
-  
+  print('checkpoint2')
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
   # Create sample files for FaaSr demo and stores in an S3 bucket
   #
@@ -85,11 +85,11 @@ create_sample_data <- function(folder, output1, output2) {
   log_msg <- paste0('Monitoring Function One:')
   result_one <- run_with_network_monitoring(faasr_put_file(local_file="df1.csv", remote_folder=folder, remote_file=output1))
   log_msg <- paste0(result_one)
-  
+  print('checkpoint3')
   log_msg <- paste0('Monitoring Function One:')
   result_two <- run_with_network_monitoring(faasr_put_file(local_file="df2.csv", remote_folder=folder, remote_file=output2))
   log_msg <- paste0(result_two)
-  
+  print('checkpoint4')
   
   # Print a log message
   # 
