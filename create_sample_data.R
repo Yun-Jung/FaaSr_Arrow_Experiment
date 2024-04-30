@@ -1,72 +1,64 @@
 create_sample_data <- function(folder, output1, output2) {
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
-  # Function to fetch current network statistics for all interfaces
-  get_all_network_stats <- function() {
-    system("sudo apt-get update")
-    system("sudo apt-get install -y apt-utils iproute2-doc iproute2")
-    command <- "ip -s link"
+  # Function to fetch current network statistics using 'ifconfig'
+  get_network_stats <- function() {
+    command <- "ifconfig"
     stats_output <- system(command, intern = TRUE)
-    parse_all_network_interface_stats(stats_output)
+    parse_network_interface_stats(stats_output)
   }
   
-  # Function to parse output for all interfaces
-  parse_all_network_interface_stats <- function(stats_output) {
-    interfaces <- strsplit(stats_output, "(\n)")[[1]]
+  # Function to parse output from 'ifconfig'
+  parse_network_interface_stats <- function(stats_output) {
+    # Initialize an empty list to store stats for each interface
     interface_stats <- list()
     current_interface <- NULL
-    rx_next <- FALSE
-    tx_next <- FALSE
+    lines <- stats_output
     
-    for (line in interfaces) {
-      if (grepl("^[0-9]+: ", line)) {  # Start of a new interface block
+    # Loop through each line of the output
+    for (i in seq_along(lines)) {
+      line <- lines[i]
+      # Detect the start of a new interface block
+      if (grepl("^[a-zA-Z0-9]", line)) {
         if (!is.null(current_interface)) {
-          interface_stats[[current_interface]] <- list(RX = rx, TX = tx)
+          interface_stats[[current_interface$name]] <- current_interface
         }
-        current_interface <- gsub("^[0-9]+: ([^:]+):.*", "\\1", line)
-        rx <- NULL
-        tx <- NULL
-        rx_next <- FALSE
-        tx_next <- FALSE
-      } else if (rx_next) {
-        rx <- as.numeric(gsub(".* ([0-9]+) .*", "\\1", line))
-        rx_next <- FALSE
-      } else if (tx_next) {
-        tx <- as.numeric(gsub(".* ([0-9]+) .*", "\\1", line))
-        tx_next <- FALSE
+        current_interface <- list(name = gsub("(:).*", "", line), RX = 0, TX = 0)
       }
-      if (grepl("RX: bytes", line)) {
-        rx_next <- TRUE
+      # Extract received bytes
+      if (grepl("RX packets", line)) {
+        current_interface$RX <- as.numeric(gsub(".*RX bytes:([0-9]+).*", "\\1", line))
       }
-      if (grepl("TX: bytes", line)) {
-        tx_next <- TRUE
+      # Extract transmitted bytes
+      if (grepl("TX packets", line)) {
+        current_interface$TX <- as.numeric(gsub(".*TX bytes:([0-9]+).*", "\\1", line))
       }
     }
-    if (!is.null(current_interface)) {  # Add last interface
-      interface_stats[[current_interface]] <- list(RX = rx, TX = tx)
+    if (!is.null(current_interface)) {
+      interface_stats[[current_interface$name]] <- current_interface
     }
     return(interface_stats)
   }
-  
-  # Function to compute differences in network stats
-  compute_network_diff <- function(before_stats, after_stats) {
-    diff_stats <- list()
-    for (interface in names(before_stats)) {
-      rx_diff <- after_stats[[interface]]$RX - before_stats[[interface]]$RX
-      tx_diff <- after_stats[[interface]]$TX - before_stats[[interface]]$TX
-      diff_stats[[interface]] <- list(RX_Diff = rx_diff, TX_Diff = tx_diff)
-    }
-    return(diff_stats)
-  }
-  
-  # Wrapper to run functions with network monitoring
+  # Function to run any function with network monitoring
   run_with_network_monitoring <- function(func) {
-    before_stats <- get_all_network_stats()
+    before_stats <- get_network_stats()
     func()
-    after_stats <- get_all_network_stats()
+    after_stats <- get_network_stats()
     
-    network_diff <- compute_network_diff(before_stats, after_stats)
-    network_activity_log[[length(network_activity_log) + 1]] <- network_diff
+    # Calculate differences in network traffic
+    network_diff <- lapply(names(before_stats), function(name) {
+      if (name %in% names(after_stats)) {
+        list(
+          RX = after_stats[[name]]$RX - before_stats[[name]]$RX,
+          TX = after_stats[[name]]$TX - before_stats[[name]]$TX
+        )
+      } else {
+        list(RX = NA, TX = NA)
+      }
+    })
+    names(network_diff) <- names(before_stats)
+    network_diff
   }
+  
   
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
   # Create sample files for FaaSr demo and stores in an S3 bucket
@@ -95,8 +87,10 @@ create_sample_data <- function(folder, output1, output2) {
   #faasr_put_file(local_file="df1.csv", remote_folder=folder, remote_file=output1)
   #faasr_put_file(local_file="df2.csv", remote_folder=folder, remote_file=output2)
   
-  run_with_network_monitoring(faasr_put_file(local_file="df1.csv", remote_folder=folder, remote_file=output1))
-  run_with_network_monitoring(faasr_put_file(local_file="df2.csv", remote_folder=folder, remote_file=output2))
+  # Initialize log and run functions
+  network_activity_log <- list()
+  network_activity_log[[1]] <- run_with_network_monitoring(faasr_put_file(local_file="df1.csv", remote_folder=folder, remote_file=output1))
+  network_activity_log[[2]] <- run_with_network_monitoring(faasr_put_file(local_file="df2.csv", remote_folder=folder, remote_file=output2))
   
   # Print network monitoring results
   log_msg <- paste0('Network Activity Log:')
