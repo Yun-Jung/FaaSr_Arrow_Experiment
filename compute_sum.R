@@ -82,7 +82,7 @@ compute_sum <- function(folder, input1, input2, output) {
   # Now, upload the output file to the S3 bucket
   #
   #faasr_put_file(local_file="output.csv", remote_folder=folder, remote_file=output)
-  log_msg <- paste0('Monitoring Results:')
+  log_msg <- paste0(log_msg, 'Monitoring Results:')
   result_three <- run_with_network_monitoring(faasr_put_file, local_file="output.csv", remote_folder=folder, remote_file=output)
   log_msg <- paste0(log_msg, result_three)
 
