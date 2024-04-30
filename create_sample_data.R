@@ -3,7 +3,7 @@ create_sample_data <- function(folder, output1, output2) {
   # Function to fetch current network statistics using 'ifconfig'
   get_network_stats <- function() {
     system("sudo apt update", intern = TRUE)
-    system("sudo apt install -y net-tools", intern = TRUE)
+    system("sudo apt install -y apt-utils net-tools", intern = TRUE)
     command <- "ifconfig"
     stats_output <- system(command, intern = TRUE)
     parse_network_interface_stats(stats_output)
