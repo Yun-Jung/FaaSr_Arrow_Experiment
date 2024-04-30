@@ -81,7 +81,7 @@ create_sample_data <- function(folder, output1, output2) {
   log_msg <- paste0('Monitoring Results:')
   result_one <- run_with_network_monitoring(faasr_put_file, local_file="df1.csv", remote_folder=folder, remote_file=output1)
   log_msg <- paste0(
-    "Interface: ", result_with_params$Interface,
+    "Interface: ", result_one$Interface,
     ", Bytes Sent Diff: ", result_one$Bytes_Sent_Diff,
     ", Bytes Recv Diff: ", result_one$Bytes_Recv_Diff,
     ", Packets Sent Diff: ", result_one$Packets_Sent_Diff,
@@ -91,7 +91,7 @@ create_sample_data <- function(folder, output1, output2) {
   log_msg <- paste0('Monitoring Results:')
   result_two <- run_with_network_monitoring(faasr_put_file, local_file="df2.csv", remote_folder=folder, remote_file=output2)
   log_msg <- paste0(
-    "Interface: ", result_with_params$Interface,
+    "Interface: ", result_two$Interface,
     ", Bytes Sent Diff: ", result_two$Bytes_Sent_Diff,
     ", Bytes Recv Diff: ", result_two$Bytes_Recv_Diff,
     ", Packets Sent Diff: ", result_two$Packets_Sent_Diff,
