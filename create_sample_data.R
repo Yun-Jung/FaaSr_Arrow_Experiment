@@ -30,12 +30,16 @@ create_sample_data <- function(folder, output1, output2) {
     names(stats) <- names(net_io)
     return(stats)
   }
-  print('checkpoint1')
+  
   # Function to run any given function with network monitoring
   run_with_network_monitoring <- function(func) {
+    print('checkpoint1')
     before_stats <- get_network_stats()
+    print('checkpoint2')
     func()  # Run the passed function
+    print('checkpoint3')
     after_stats <- get_network_stats()
+    print('checkpoint4')
     
     # Calculate and return the differences in network traffic
     network_diff <- lapply(names(before_stats), function(name) {
@@ -53,7 +57,7 @@ create_sample_data <- function(folder, output1, output2) {
     })
     return(network_diff)
   }
-  print('checkpoint2')
+  
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
   # Create sample files for FaaSr demo and stores in an S3 bucket
   #
