@@ -1,11 +1,11 @@
 install.packages("reticulate")
 library(reticulate)
-print(reticulate::py_discover_config())
+use_python("/usr/bin/python3")
 
 create_sample_data <- function(folder, output1, output2) {
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
   print('test1')
-  reticulate::py_install("psutil")
+  py_install("psutil")
   print('test2')
   
   psutil <- import("psutil")
