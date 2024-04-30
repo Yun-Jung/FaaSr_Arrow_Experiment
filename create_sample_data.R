@@ -1,7 +1,8 @@
+install.packages("reticulate")
+library(reticulate)
+
 create_sample_data <- function(folder, output1, output2) {
   ###################### ADD NETWORK MONITORING FUNCTION #####################################
-  install.packages("reticulate")
-  library(reticulate)
   print('test1')
   py_install("psutil")
   print('test2')
