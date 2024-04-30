@@ -7,8 +7,12 @@ create_sample_data <- function(folder, output1, output2) {
   library(reticulate)
   use_python("/usr/bin/python3.10")
   system('sudo pip install --upgrade psutil')
+
+  print("test")
   
   psutil <- import("psutil")
+
+  print("test")
   
   # Function to fetch and return formatted network statistics
   get_network_stats <- function() {
