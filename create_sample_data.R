@@ -7,12 +7,7 @@ create_sample_data <- function(folder, output1, output2) {
   library(reticulate)
   use_python("/usr/bin/python3.10")
   system('sudo pip install --upgrade psutil')
-
-  print("test")
-  
   psutil <- import("psutil")
-
-  print("test")
   
   # Function to fetch and return formatted network statistics
   get_network_stats <- function() {
@@ -33,13 +28,10 @@ create_sample_data <- function(folder, output1, output2) {
   
   # Function to run any given function with network monitoring
   run_with_network_monitoring <- function(func, ...) {
-    print('checkpoint1')
+
     before_stats <- get_network_stats()
-    print('checkpoint2')
     func(...)  # Run the passed function
-    print('checkpoint3')
     after_stats <- get_network_stats()
-    print('checkpoint4')
     
     # Calculate and return the differences in network traffic
     network_diff <- lapply(names(before_stats), function(name) {
@@ -89,11 +81,11 @@ create_sample_data <- function(folder, output1, output2) {
   log_msg <- paste0('Monitoring Function One:')
   result_one <- run_with_network_monitoring(faasr_put_file, local_file="df1.csv", remote_folder=folder, remote_file=output1)
   log_msg <- paste0(result_one)
-  print('checkpoint3')
+  print(result_one)
   log_msg <- paste0('Monitoring Function One:')
-  result_two <- run_with_network_monitoring(faasr_put_file(local_file="df2.csv", remote_folder=folder, remote_file=output2))
+  result_two <- run_with_network_monitoring(faasr_put_file, local_file="df2.csv", remote_folder=folder, remote_file=output2))
   log_msg <- paste0(result_two)
-  print('checkpoint4')
+  print(result_two)
   
   # Print a log message
   # 
