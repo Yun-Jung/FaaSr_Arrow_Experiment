@@ -8,7 +8,7 @@ create_sample_data <- function(folder, output1, output2) {
   use_python("/usr/bin/python3.10")
   print(reticulate::py_discover_config())
   print('test1')
-  os <- import("os")
+  psutil <- import("psutil")
   print('test2')
   py_install("psutil")
   print('test2')
