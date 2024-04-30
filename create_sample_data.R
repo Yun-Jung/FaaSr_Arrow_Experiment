@@ -7,7 +7,7 @@ create_sample_data <- function(folder, output1, output2) {
   library(reticulate)
   use_python("/usr/lib/python3.10")
   print('test1')
-  py_install("pandas")
+  py_install("psutil")
   print('test2')
   
   psutil <- import("psutil")
